@@ -1,0 +1,28 @@
+{
+  "AiDocumentParser": {
+    "blades": {
+      "hello-world": {
+        "title": "Hello world blade"
+      }
+    }
+  },
+  "permissions": {
+    "AiDocumentParser:access": "Open AiDocumentParser menu",
+    "AiDocumentParser:create": "Create AiDocumentParser related data",
+    "AiDocumentParser:read": "View AiDocumentParser related data",
+    "AiDocumentParser:update": "Update AiDocumentParser related data",
+    "AiDocumentParser:delete": "Delete AiDocumentParser related data"
+  },
+  "settings": {
+    "AiDocumentParser": {
+      "AiDocumentParserEnabled": {
+        "title": "AiDocumentParser Enabled",
+        "description": "AiDocumentParser Enabled setting"
+      },
+      "AiDocumentParserPassword": {
+        "title": "AiDocumentParser Password",
+        "description": "AiDocumentParser Password setting"
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+  <id>VirtoCommerce.AiDocumentParser</id>
+  <version>3.200.0</version>
+  <version-tag>preview</version-tag>
+
+  <platformVersion>3.424.0</platformVersion>
+  <dependencies>
+    <!--<dependency id="VirtoCommerce.Core" version="3.211.0" />-->
+  </dependencies>
+
+  <title>AI Document Parser</title>
+  <description>Creates quotes from incoming files</description>
+
+  <authors>
+    <author>Alexander Siniouguine</author>
+  </authors>
+  <owners>
+    <owner>VirtoCommerce</owner>
+  </owners>
+
+  <projectUrl>https://github.com/VirtoCommerce/vc-module-ai-document-parser</projectUrl>
+  <iconUrl>Modules/$(VirtoCommerce.AiDocumentParser)/Content/logo.png</iconUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+  <assemblyFile>VirtoCommerce.AiDocumentParser.Web.dll</assemblyFile>
+  <moduleType>VirtoCommerce.AiDocumentParser.Web.Module, VirtoCommerce.AiDocumentParser.Web</moduleType>
+
+  <releaseNotes>First version.</releaseNotes>
+  <copyright>Copyright © 2023 VirtoCommerce. All rights reserved</copyright>
+  <tags>extension module</tags>
+  <useFullTypeNameInSwagger>false</useFullTypeNameInSwagger>
+</module>

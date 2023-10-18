@@ -1,0 +1,64 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{83B6C1EA-A9CD-4E44-90F0-F3DAB6926BEF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.AiDocumentParser.Web", "src\VirtoCommerce.AiDocumentParser.Web\VirtoCommerce.AiDocumentParser.Web.csproj", "{6E085E13-323E-451C-9A84-2E69987D2403}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.AiDocumentParser.Data", "src\VirtoCommerce.AiDocumentParser.Data\VirtoCommerce.AiDocumentParser.Data.csproj", "{50471BC7-6B90-41C0-8C97-68E1D357AC54}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.AiDocumentParser.Core", "src\VirtoCommerce.AiDocumentParser.Core\VirtoCommerce.AiDocumentParser.Core.csproj", "{4E863A80-7D21-442C-BD80-69B348519957}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B90B5CC4-5AA0-46E6-AD08-D736C73255B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.AiDocumentParser.Tests", "tests\VirtoCommerce.AiDocumentParser.Tests\VirtoCommerce.AiDocumentParser.Tests.csproj", "{9A5ED7E1-52CE-48BF-9FBD-EF3DDF6F46F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DB3B1356-7BF1-4147-A471-C6DD16DC8161}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		module.ignore = module.ignore
+		README.md = README.md
+		VirtoCommerce.AiDocumentParser.sln.DotSettings = VirtoCommerce.AiDocumentParser.sln.DotSettings
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E085E13-323E-451C-9A84-2E69987D2403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E085E13-323E-451C-9A84-2E69987D2403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E085E13-323E-451C-9A84-2E69987D2403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E085E13-323E-451C-9A84-2E69987D2403}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50471BC7-6B90-41C0-8C97-68E1D357AC54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50471BC7-6B90-41C0-8C97-68E1D357AC54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50471BC7-6B90-41C0-8C97-68E1D357AC54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50471BC7-6B90-41C0-8C97-68E1D357AC54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E863A80-7D21-442C-BD80-69B348519957}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E863A80-7D21-442C-BD80-69B348519957}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E863A80-7D21-442C-BD80-69B348519957}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E863A80-7D21-442C-BD80-69B348519957}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A5ED7E1-52CE-48BF-9FBD-EF3DDF6F46F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A5ED7E1-52CE-48BF-9FBD-EF3DDF6F46F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A5ED7E1-52CE-48BF-9FBD-EF3DDF6F46F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A5ED7E1-52CE-48BF-9FBD-EF3DDF6F46F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E085E13-323E-451C-9A84-2E69987D2403} = {83B6C1EA-A9CD-4E44-90F0-F3DAB6926BEF}
+		{50471BC7-6B90-41C0-8C97-68E1D357AC54} = {83B6C1EA-A9CD-4E44-90F0-F3DAB6926BEF}
+		{4E863A80-7D21-442C-BD80-69B348519957} = {83B6C1EA-A9CD-4E44-90F0-F3DAB6926BEF}
+		{9A5ED7E1-52CE-48BF-9FBD-EF3DDF6F46F8} = {B90B5CC4-5AA0-46E6-AD08-D736C73255B5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {80301309-0F9B-4E14-9657-FF260A5457B8}
+	EndGlobalSection
+EndGlobal
