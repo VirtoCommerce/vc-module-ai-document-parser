@@ -8,6 +8,9 @@
     <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Postmark" Version="4.7.9" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.AiDocumentParser.Core\VirtoCommerce.AiDocumentParser.Core.csproj" />
     <ProjectReference Include="..\VirtoCommerce.AiDocumentParser.Data\VirtoCommerce.AiDocumentParser.Data.csproj" />
   </ItemGroup>

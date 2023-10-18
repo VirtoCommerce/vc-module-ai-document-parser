@@ -1,6 +1,9 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PostmarkDotNet.Webhooks;
 using VirtoCommerce.AiDocumentParser.Core;
 using VirtoCommerce.AiDocumentParser.Core.Services;
 using VirtoCommerce.AiDocumentParser.Data.Services;
@@ -42,6 +45,45 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PostInboundWebhook(string store, PostmarkInboundWebhookMessage message)
+        {
+            if (message == null || message.Attachments == null || message.Attachments.Count == 0)
+            {
+                return BadRequest("Invalid message or no attachments found in the message.");
+            }
+
+            var fileContent = message.Attachments[0].Content;
+
+            if (string.IsNullOrEmpty(fileContent))
+            {
+                return BadRequest("Attachment content is empty.");
+            }
+
+            try
+            {
+                using (MemoryStream stream = new MemoryStream(Convert.FromBase64String(fileContent)))
+                {
+                    var modelId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ModelId);
+                    var po = await _aiDocumentParser.ParsePurchaseOrderDocument(stream, modelId);
+
+                    if (po != null)
+                    {
+                        var graphUrl = $"{Request.Scheme}://{Request.Host}/graphql";
+                        var controller = new GraphController(graphUrl);
+                        var result2 = await controller.CreateQuoteFromPO(store, po);
+                    }
+                }
+
+                // Process the inbound hook data
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred while processing the attachment: {ex.Message}");
+            }
         }
     }
 }
