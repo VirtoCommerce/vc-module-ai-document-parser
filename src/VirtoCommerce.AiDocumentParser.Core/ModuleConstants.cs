@@ -30,6 +30,14 @@ public static class ModuleConstants
     {
         public static class General
         {
+            public static SettingDescriptor XApiEndpoint { get; } = new SettingDescriptor
+            {
+                Name = "Ai.DocumentParser.XApiEndpoint",
+                GroupName = "XAPI",
+                ValueType = SettingValueType.ShortText,
+                DefaultValue = "https://localhost:5001/graphql",
+            };
+
             public static SettingDescriptor Endpoint { get; } = new SettingDescriptor
             {
                 Name = "Ai.DocumentParser.Endpoint",
@@ -61,6 +69,7 @@ public static class ModuleConstants
                     yield return Endpoint;
                     yield return ApiKey;
                     yield return ModelId;
+                    yield return XApiEndpoint;
                 }
             }
         }

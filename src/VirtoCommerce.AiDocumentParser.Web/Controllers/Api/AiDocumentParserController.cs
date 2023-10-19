@@ -48,7 +48,8 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostInboundWebhook(string store, PostmarkInboundWebhookMessage message)
+        [Route("~/api/ai/document-parser/{store}/postmark-webhook")]
+        public async Task<ActionResult> PostInboundWebhook([FromRoute] string store, [FromBody]PostmarkInboundWebhookMessage message)
         {
             if (message == null || message.Attachments == null || message.Attachments.Count == 0)
             {
@@ -68,10 +69,11 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
                 {
                     var modelId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ModelId);
                     var po = await _aiDocumentParser.ParsePurchaseOrderDocument(stream, modelId);
+                    var xapiEndPoint = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.XApiEndpoint);
 
                     if (po != null)
                     {
-                        var graphUrl = $"{Request.Scheme}://{Request.Host}/graphql";
+                        var graphUrl = xapiEndPoint ?? $"{Request.Scheme}://{Request.Host}/graphql";
                         var controller = new GraphController(graphUrl);
                         var result2 = await controller.CreateQuoteFromPO(store, po);
                     }
