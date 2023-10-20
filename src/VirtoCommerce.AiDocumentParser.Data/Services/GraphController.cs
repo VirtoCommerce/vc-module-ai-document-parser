@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.IdentityModel.Tokens;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Azure.AI.FormRecognizer.DocumentAnalysis;
@@ -8,18 +10,62 @@ using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 using Newtonsoft.Json;
 using VirtoCommerce.AiDocumentParser.Core.Models;
+using VirtoCommerce.Platform.Core.Caching;
+using IdentityModel.Client;
+using Azure.Core;
 
 namespace VirtoCommerce.AiDocumentParser.Data.Services
 {
     public class GraphController
     {
         readonly HttpClient _client = null;
+        private readonly IPlatformMemoryCache _memoryCache;
         readonly string _ServiceUrl;
+        readonly string _ClientId;
+        readonly string _ClientSecret;
 
-        public GraphController(string serviceUrl)
+
+        public GraphController(string serviceUrl, string clientId, string clientSecret, IPlatformMemoryCache memoryCache)
         {
             _client = new HttpClient();
             _ServiceUrl = serviceUrl;
+            _memoryCache = memoryCache;
+            _ClientId = clientId;
+            _ClientSecret = clientSecret;   
+        }
+
+        private async Task<HttpClient> GetAuthenticatedHttpClient()
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetOrRenewTokenAsync());
+            return httpClient;
+        }
+
+        private async Task<string> GetOrRenewTokenAsync()
+        {
+            var cacheKey = CacheKey.With(GetType(), "token");
+
+            var token = await _memoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            {
+                using (var client = new HttpClient())
+                {
+                    var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+                    {
+                        Address = $"{_ServiceUrl.TrimEnd('/')}/connect/token",
+                        ClientId = _ClientId,
+                        ClientSecret = _ClientSecret
+                    });
+
+                    if (!response.IsError)
+                    {
+                        cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(response.ExpiresIn);
+                        return response.AccessToken;
+                    }
+
+                    return null;
+                }
+            }, cacheNullValue: false);
+            return token;
         }
 
         public async Task<GraphQLResponse> AddAddressToCart(string cartId, string storeId, string userId, string addressName, POAddress address)
@@ -58,11 +104,14 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync(_ServiceUrl, content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
+            using (var client = await GetAuthenticatedHttpClient())
+            {
+                var response = await client.PostAsync($"{_ServiceUrl}/graphql", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
 
-            return result;
+                return result;
+            }
         }
 
         public async Task<GraphQLResponse> AddItemToCart(string userId, string storeId, string productId, int quantity)
@@ -90,11 +139,14 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync(_ServiceUrl, content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
+            using (var client = await GetAuthenticatedHttpClient())
+            {
+                var response = await client.PostAsync($"{_ServiceUrl}/graphql", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
 
-            return result;
+                return result;
+            }
         }
 
         public async Task<GraphQLResponse> AddItemsToCart(string userId, string storeId, PurchaseOrderLineItem[] skus)
@@ -129,11 +181,14 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync(_ServiceUrl, content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
+            using (var client = await GetAuthenticatedHttpClient())
+            {
+                var response = await client.PostAsync($"{_ServiceUrl}/graphql", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
 
-            return result;
+                return result;
+            }
         }
 
         //
@@ -161,11 +216,14 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync(_ServiceUrl, content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
+            using (var client = await GetAuthenticatedHttpClient())
+            {
+                var response = await client.PostAsync($"{_ServiceUrl}/graphql", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
 
-            return result;
+                return result;
+            }
         }
 
         public async Task<GraphQLResponse> CreateQuoteFromPO(string storeId, PurchaseOrderDocument po)

@@ -10,6 +10,7 @@
     <PackageReference Include="AddressParser" Version="1.0.3" />
     <PackageReference Include="Azure.AI.FormRecognizer" Version="4.1.0" />
     <PackageReference Include="GraphQL.Common" Version="1.0.3" />
+    <PackageReference Include="IdentityModel" Version="6.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

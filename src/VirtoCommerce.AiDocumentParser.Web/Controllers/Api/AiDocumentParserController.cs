@@ -7,6 +7,7 @@ using PostmarkDotNet.Webhooks;
 using VirtoCommerce.AiDocumentParser.Core;
 using VirtoCommerce.AiDocumentParser.Core.Services;
 using VirtoCommerce.AiDocumentParser.Data.Services;
+using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
@@ -17,13 +18,16 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
 
         private readonly ISettingsManager _settingsManager;
         private readonly IDocumentParser _aiDocumentParser;
+        private readonly IPlatformMemoryCache _memoryCache;
 
         public AiDocumentParserController(
             ISettingsManager settingsManager,
-            IDocumentParser aiDocumentParser)
+            IDocumentParser aiDocumentParser,
+            IPlatformMemoryCache memoryCache)
         {
             _settingsManager = settingsManager;
             _aiDocumentParser = aiDocumentParser;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -36,11 +40,13 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
         {
             var modelId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ModelId);
             var po = await _aiDocumentParser.ParsePurchaseOrderDocument(file.OpenReadStream(), modelId);
+            var clientId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientId);
+            var clientSecret = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientSecret);
 
             if (po != null)
             {
-                var graphUrl = $"{Request.Scheme}://{Request.Host}/graphql";
-                var controller = new GraphController(graphUrl);
+                var graphUrl = $"{Request.Scheme}://{Request.Host}";
+                var controller = new GraphController(graphUrl, clientId, clientSecret, _memoryCache);
                 var result2 = await controller.CreateQuoteFromPO(store, po);
             }
 
@@ -70,11 +76,13 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
                     var modelId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ModelId);
                     var po = await _aiDocumentParser.ParsePurchaseOrderDocument(stream, modelId);
                     var xapiEndPoint = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.XApiEndpoint);
+                    var clientId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientId);
+                    var clientSecret = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientSecret);
 
                     if (po != null)
                     {
-                        var graphUrl = xapiEndPoint ?? $"{Request.Scheme}://{Request.Host}/graphql";
-                        var controller = new GraphController(graphUrl);
+                        var graphUrl = xapiEndPoint ?? $"{Request.Scheme}://{Request.Host}";
+                        var controller = new GraphController(graphUrl, clientId, clientSecret, _memoryCache);
                         var result2 = await controller.CreateQuoteFromPO(store, po);
                     }
                 }

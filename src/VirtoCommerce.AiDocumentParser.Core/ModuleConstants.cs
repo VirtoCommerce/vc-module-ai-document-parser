@@ -35,7 +35,7 @@ public static class ModuleConstants
                 Name = "Ai.DocumentParser.XApiEndpoint",
                 GroupName = "XAPI",
                 ValueType = SettingValueType.ShortText,
-                DefaultValue = "https://localhost:5001/graphql",
+                DefaultValue = "https://localhost:5001",
             };
 
             public static SettingDescriptor Endpoint { get; } = new SettingDescriptor
@@ -62,14 +62,32 @@ public static class ModuleConstants
                 DefaultValue = "",
             };
 
+            public static SettingDescriptor ClientId { get; } = new SettingDescriptor
+            {
+                Name = "Ai.DocumentParser.ClientId",
+                GroupName = "OAuth2",
+                ValueType = SettingValueType.ShortText,
+                DefaultValue = "",
+            };
+
+            public static SettingDescriptor ClientSecret { get; } = new SettingDescriptor
+            {
+                Name = "Ai.DocumentParser.ClientSecret",
+                GroupName = "OAuth2",
+                ValueType = SettingValueType.SecureString,
+                DefaultValue = "",
+            };
+
             public static IEnumerable<SettingDescriptor> AllGeneralSettings
             {
                 get
                 {
                     yield return Endpoint;
-                    yield return ApiKey;
                     yield return ModelId;
+                    yield return ApiKey;
                     yield return XApiEndpoint;
+                    yield return ClientId;
+                    yield return ClientSecret;
                 }
             }
         }

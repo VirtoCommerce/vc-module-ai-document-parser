@@ -11,18 +11,37 @@ using VirtoCommerce.AiDocumentParser.Data.Services;
 using VirtoCommerce.Platform.Core.Settings;
 using Moq;
 using VirtoCommerce.AiDocumentParser.Core;
+using VirtoCommerce.Platform.Core.Caching;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using Microsoft.VisualBasic.FileIO;
+using VirtoCommerce.Platform.Caching;
 
 namespace VirtoCommerce.AiDocumentParser.Tests;
 
 [Trait("Category", "Unit")]
 public class DocumentScenarios
 {
+    private readonly Mock<IPlatformMemoryCache> _memoryCasheMock;
+
+    public DocumentScenarios()
+    {
+        _memoryCasheMock = new Mock<IPlatformMemoryCache>();
+
+        //  setup cache mocks
+        var cacheEntry = new Mock<ICacheEntry>();
+        cacheEntry.SetupGet(c => c.ExpirationTokens).Returns(new List<IChangeToken>());
+        var cacheKey = CacheKey.With(typeof(GraphController), "token");
+        _memoryCasheMock.Setup(pmc => pmc.CreateEntry(cacheKey)).Returns(cacheEntry.Object);
+        _memoryCasheMock.Setup(x => x.GetDefaultCacheEntryOptions()).Returns(() => new MemoryCacheEntryOptions());
+    }
+
     [Fact]
     public async Task Add_Item_To_Cart()
     {
-        var controller = new GraphController("https://localhost:5001/graphql");
+        var controller = new GraphController("https://localhost:5001", "", "", _memoryCasheMock.Object);
 
-        var result = await controller.AddItemToCart("B2B-store", "test", "e0a441cb-efe7-4d9a-927d-1dabf23db1ff", 1);
+        var result = await controller.AddItemToCart("test", "B2B-store", "e0a441cb-efe7-4d9a-927d-1dabf23db1ff", 1);
 
         // Assert
         var cartId = result.Data["addItem"]["id"];
@@ -66,7 +85,7 @@ public class DocumentScenarios
         using var stream = new FileStream(filePath, FileMode.Open);
         var po = await parser.ParsePurchaseOrderDocument(stream, "PO4");
 
-        var controller = new GraphController("https://localhost:5001/graphql");
+        var controller = new GraphController("https://localhost:5001", "", "", _memoryCasheMock.Object);
         var result2 = await controller.CreateQuoteFromPO("B2B-store", po);      
     }
 }
