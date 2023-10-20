@@ -172,6 +172,7 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
                     storeId,
                     cartName = "default",
                     userId,
+                    cultureName = "en-US",
                     cartType = "Bulk",
                     cartItems = skus.Select(x=>new { productSku = x.ProductCode, quantity = x.Quantity }).ToArray()
                 }
@@ -226,7 +227,40 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
             }
         }
 
-        public async Task<GraphQLResponse> CreateQuoteFromPO(string storeId, PurchaseOrderDocument po)
+        public async Task<GraphQLResponse> SubmitQuote(string quoteId, string comment)
+        {
+            // Arrange
+            var query = @"
+                mutation SubmitQuoteRequest($command: SubmitQuoteCommandType!) {
+                    submitQuoteRequest(command: $command) {
+                        id
+                    }
+                }";
+
+            var variables = new
+            {
+                command = new
+                {
+                    quoteId,
+                    comment
+                }
+            };
+
+            var request = new GraphQLRequest { Query = query, Variables = variables };
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+            // Act
+            using (var client = await GetAuthenticatedHttpClient())
+            {
+                var response = await client.PostAsync($"{_ServiceUrl}/graphql", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<GraphQLResponse>(responseContent);
+
+                return result;
+            }
+        }
+
+        public async Task<string> CreateQuoteFromPO(string storeId, PurchaseOrderDocument po)
         {
             var result = await AddItemsToCart(po.CustomerNumber, storeId, po.LineItems.ToArray());
 
@@ -248,9 +282,26 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
                 }
             }
 
+            // Create quote
+            var quoteResult = await CreateQuote((string)cartId, po.Comments);
 
-            var quote = await CreateQuote((string)cartId, po.Comments);
-            return quote;
+            if (quoteResult.Data["createQuoteFromCart"] == null)
+            {
+                throw new ApplicationException(quoteResult.Errors.ToString());
+            }
+
+            var quoteId = quoteResult.Data["createQuoteFromCart"]["id"];
+
+            // Submit quote for processing
+            var quoteSubmitResult = await SubmitQuote((string)quoteId, po.Comments);
+
+            if (quoteSubmitResult.Data["submitQuoteRequest"] == null)
+            {
+                throw new ApplicationException(quoteSubmitResult.Errors.ToString());
+            }
+
+
+            return quoteId;
         }
 
     }

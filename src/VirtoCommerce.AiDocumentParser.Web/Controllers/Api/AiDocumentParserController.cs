@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,6 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
     [Route("api/ai/document-parser")]
     public class AiDocumentParserController : Controller
     {
-
         private readonly ISettingsManager _settingsManager;
         private readonly IDocumentParser _aiDocumentParser;
         private readonly IPlatformMemoryCache _memoryCache;
@@ -62,28 +62,29 @@ namespace VirtoCommerce.AiDocumentParser.Web.Controllers.Api
                 return BadRequest("Invalid message or no attachments found in the message.");
             }
 
-            var fileContent = message.Attachments[0].Content;
-
-            if (string.IsNullOrEmpty(fileContent))
-            {
-                return BadRequest("Attachment content is empty.");
-            }
+            var modelId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ModelId);
+            var xapiEndPoint = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.XApiEndpoint);
+            var clientId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientId);
+            var clientSecret = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientSecret);
+            var graphUrl = xapiEndPoint ?? $"{Request.Scheme}://{Request.Host}";
 
             try
             {
-                using (MemoryStream stream = new MemoryStream(Convert.FromBase64String(fileContent)))
+                foreach (var attachment in message.Attachments)
                 {
-                    var modelId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ModelId);
-                    var po = await _aiDocumentParser.ParsePurchaseOrderDocument(stream, modelId);
-                    var xapiEndPoint = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.XApiEndpoint);
-                    var clientId = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientId);
-                    var clientSecret = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.ClientSecret);
-
-                    if (po != null)
+                    string extension = Path.GetExtension(attachment.Name).ToLower();
+                    if (extension == ".pdf")
                     {
-                        var graphUrl = xapiEndPoint ?? $"{Request.Scheme}://{Request.Host}";
-                        var controller = new GraphController(graphUrl, clientId, clientSecret, _memoryCache);
-                        var result2 = await controller.CreateQuoteFromPO(store, po);
+                        using (MemoryStream stream = new MemoryStream(Convert.FromBase64String(attachment.Content)))
+                        {
+                            var po = await _aiDocumentParser.ParsePurchaseOrderDocument(stream, modelId);
+
+                            if (po != null)
+                            {                                
+                                var controller = new GraphController(graphUrl, clientId, clientSecret, _memoryCache);
+                                var result2 = await controller.CreateQuoteFromPO(store, po);
+                            }
+                        }
                     }
                 }
 
