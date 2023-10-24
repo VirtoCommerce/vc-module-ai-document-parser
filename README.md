@@ -29,23 +29,6 @@ Email will then be processed by Virto Commerce to create a quote, quote is then 
 ![Quote Request](./docs/media/po-quote-request.png)
 ![Quote Request Details](./docs/media/po-quote-request-details.png)
 
-
-
-## Web API
-
-Web API documentation for each module is built out automatically and can be accessed by following the link bellow:
-<https://link-to-swager-api>
-
-## Database Model
-
-![DB model](./docs/media/diagram-db-model.png)
-
-## Related topics
-
-[Some Article1](some-article1.md)
-
-[Some Article2](some-article2.md)
-
 ## License
 
 Copyright (c) Virto Solutions LTD.  All rights reserved.
