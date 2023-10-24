@@ -41,7 +41,7 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
             // prebuilt-invoice model, consult:
             // https://aka.ms/azsdk/formrecognizer/invoicefieldschema
 
-            for (int i = 0; i < result.Documents.Count; i++)
+            for (var i = 0; i < result.Documents.Count; i++)
             {
                 Console.WriteLine($"Document {i}:");
 
@@ -57,17 +57,30 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
                     }
                 }
 
+
+                if (document.Fields.TryGetValue("CustomerAddressRecipient", out DocumentField customerAddressRecipientField))
+                {
+                    if (customerAddressRecipientField.FieldType == DocumentFieldType.String)
+                    {
+                        var customerName = customerAddressRecipientField.Value.AsString();
+                        po.CustomerAddressRecipient = customerName;
+                    }
+                }
+
                 if (document.Fields.TryGetValue("ShippingAddress", out DocumentField customerShippingAddressField))
                 {
                     if (customerShippingAddressField.FieldType == DocumentFieldType.String)
                     {
                         var addressResult = addressParser.ParseAddress(customerShippingAddressField.Value.AsString());
+
+                        NameParser.ParseName(po.CustomerAddressRecipient, out var firstName, out var lastName);
+
                         po.ShippingAddress = new POAddress()
                         {
                             AddressType = AddressType.Shipping,
                             Line1 = addressResult.StreetLine,
-                            FirstName = "First",
-                            LastName = "Last",
+                            FirstName = firstName,
+                            LastName = lastName,
                             CountryName = "USA",
                             City = addressResult.City,
                             RegionName = addressResult.State,
@@ -81,7 +94,7 @@ namespace VirtoCommerce.AiDocumentParser.Data.Services
                     if (customerNameField.FieldType == DocumentFieldType.String)
                     {
                         string customerName = customerNameField.Value.AsString();
-                        po.CustomerAddressRecipient = customerName;
+                        po.CustomerName = customerName;
                         Console.WriteLine($"Customer Name: '{customerName}', with confidence {customerNameField.Confidence}");
                     }
                 }
