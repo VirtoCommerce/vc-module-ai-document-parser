@@ -1,31 +1,35 @@
-# AiDocumentParser
+# Intelligent Document Parsing
 
 ## Overview
 
-Short overview of what the new module is.
-
-- What is the new or updated experience?
-
-- Does this module replace an existing module/experience? If yes, what is the transition plan?
-
-- Does this module has dependency on other ? If yes, list/explain the dependencies.
-
-- List the key deployment scenarios - why would people use this module?
+This module uses [Azure AI Document Intelligence](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence) to injest documents into virto commerce platform.
 
 ## Functional Requirements
 
-Short description of the new module functional requirements.
+1. You must have configured AI Document Intelligence.
+2. Postman inbound email service.
 
 ## Scenarios
 
-List of scenarios that the new module implements
+The primary scenario is an ability to send Purchase Order via email in custom format that will then be converted into quotes within Virto Commerce.
 
-1. [Scenario 1](/doc/scenario-name1.md)
-1. [Scenario 2](/doc/scenario-name2.md)
-1. [Scenario 3](/doc/scenario-name3.md)
-    1. [Scenario 3.1](/doc/scenario-name31.md)
-    1. [Scenario 3.2](/doc/scenario-name32.md)
-1. [Scenario 4](/doc/scenario-name4.md)
+Purchase Order can be created using supplied excel file template or any other PO generating software
+![Purchase Order in Excel](./docs/media/po-excel.png)
+
+Export Purchase Order into PDF
+![Purchase Order in PDF](./docs/media/po-pdf.png)
+
+Use Azure AI Document Intelligence Studio to train on the supplied document
+![Document Intelligence Studio for training](./docs/media/ai-form-recognizer.png)
+
+After the training, you can send email with PO attached to an inbound email address
+![Send Email](./docs/media/po-email.png)
+
+Email will then be processed by Virto Commerce to create a quote, quote is then submitted for processing
+![Quote Request](./docs/media/po-quote-request.png)
+![Quote Request Details](./docs/media/po-quote-request-details.png)
+
+
 
 ## Web API
 
