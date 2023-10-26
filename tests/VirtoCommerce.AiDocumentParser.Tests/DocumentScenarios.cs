@@ -1,21 +1,15 @@
-using Azure.AI.FormRecognizer.DocumentAnalysis;
-using Azure;
 using System.Collections.Generic;
 using System.IO;
-using System;
-using Xunit;
 using System.Threading.Tasks;
-using VirtoCommerce.AiDocumentParser.Tests.Helpers;
-using VirtoCommerce.AiDocumentParser.Core.Models;
-using VirtoCommerce.AiDocumentParser.Data.Services;
-using VirtoCommerce.Platform.Core.Settings;
-using Moq;
-using VirtoCommerce.AiDocumentParser.Core;
-using VirtoCommerce.Platform.Core.Caching;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
-using Microsoft.VisualBasic.FileIO;
-using VirtoCommerce.Platform.Caching;
+using Moq;
+using VirtoCommerce.AiDocumentParser.Core;
+using VirtoCommerce.AiDocumentParser.Data.Services;
+using VirtoCommerce.AiDocumentParser.Tests.Helpers;
+using VirtoCommerce.Platform.Core.Caching;
+using VirtoCommerce.Platform.Core.Settings;
+using Xunit;
 
 namespace VirtoCommerce.AiDocumentParser.Tests;
 
@@ -69,6 +63,7 @@ public class DocumentScenarios
     /// https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/formrecognizer/Azure.AI.FormRecognizer/samples/Sample_AnalyzeWithCustomModel.md
     /// </summary>
     [Fact]
+    [Trait("Category", "IntegrationTest")]
     public async void Process_PDF_Create_Quote()
     {
         string endpoint = "https://westus2.api.cognitive.microsoft.com/";
@@ -86,6 +81,6 @@ public class DocumentScenarios
         var po = await parser.ParsePurchaseOrderDocument(stream, "PO4");
 
         var controller = new GraphController("https://localhost:5001", "", "", _memoryCasheMock.Object);
-        var result2 = await controller.CreateQuoteFromPO("B2B-store", po);      
+        var result2 = await controller.CreateQuoteFromPO("B2B-store", po);
     }
 }
