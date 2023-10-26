@@ -2,7 +2,7 @@
 <module>
   <id>VirtoCommerce.AiDocumentParser</id>
   <version>3.200.0</version>
-  <version-tag>preview</version-tag>
+  <version-tag></version-tag>
 
   <platformVersion>3.424.0</platformVersion>
   <dependencies>
