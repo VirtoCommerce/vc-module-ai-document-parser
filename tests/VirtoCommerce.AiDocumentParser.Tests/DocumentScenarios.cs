@@ -13,7 +13,7 @@ using Xunit;
 
 namespace VirtoCommerce.AiDocumentParser.Tests;
 
-[Trait("Category", "Unit")]
+[Trait("Category", "IntegrationTest")]
 public class DocumentScenarios
 {
     private readonly Mock<IPlatformMemoryCache> _memoryCasheMock;
@@ -63,7 +63,6 @@ public class DocumentScenarios
     /// https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/formrecognizer/Azure.AI.FormRecognizer/samples/Sample_AnalyzeWithCustomModel.md
     /// </summary>
     [Fact]
-    [Trait("Category", "IntegrationTest")]
     public async void Process_PDF_Create_Quote()
     {
         string endpoint = "https://westus2.api.cognitive.microsoft.com/";
