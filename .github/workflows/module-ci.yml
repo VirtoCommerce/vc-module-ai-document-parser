@@ -85,11 +85,9 @@ jobs:
         github.event.pull_request.head.repo.full_name == '') }}  # Skip version-only bumps; PR not from a fork or Dependabot
     runs-on: ubuntu-24.04
     # Default GITHUB_TOKEN creates the release + updates the PR; rest uses the REPO_TOKEN PAT.
-    # id-token: write lets NuGet/login mint a short-lived OIDC key (Trusted Publishing).
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
     env:
       CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
       CLIENT_ID: ${{secrets.CLIENT_ID}}
@@ -229,21 +227,18 @@ jobs:
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
 
-      # Trusted Publishing: swap the GitHub OIDC token for a ~1h nuget.org key, minted right before push.
-      - name: NuGet login (OIDC -> temp API key)
+      - name: Pack Nuget
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        id: nuget_login
-        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
-        with:
-          # nuget.org user that created the trust policy (shared service account). Hardcoded because
-          # private repos can't read org-level Actions variables in the current plan.
-          user: virto
+        run: vc-build Pack -skip Clean+Restore+Compile+Test
 
+      # Trusted Publishing: vc-nuget-publisher holds the one nuget.org policy and pushes the packages.
       - name: Publish Nuget
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/.github/actions/publish-nuget@v3.1000.1
-        env:
-          NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+        # Bounds the wait for the publisher run; a normal publish takes under a minute.
+        timeout-minutes: 30
+        uses: VirtoCommerce/.github/actions/publish-nuget-central@v3.1000.7
+        with:
+          githubToken: ${{ secrets.REPO_TOKEN }}
 
       - name: Publish to Blob
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main') }}
